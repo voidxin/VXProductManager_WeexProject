@@ -1,0 +1,173 @@
+<!-- 调入调出明细查询 -->
+<template>
+   <div>
+       <list>
+
+           <cell repeat="{{groups}}">
+             <!--  时间和调拨人 -->
+
+              <div style="background-color: rgb(237,237,237);height: 130;flex-direction: row;">
+
+                <div style="justify-content: center;align-content: center; flex: 1">
+                  <text style="color: gray;font-size: 35;text-align: left;margin-left: 15">{{transferredInAndOutDate}}</text>
+                </div>
+
+                <div style="justify-content: center;align-content: center;flex: 1">
+                    <text style="color: gray;font-size: 35;text-align: right;margin-right: 15">调拨人:{{transferredPerson}}</text>
+                </div>
+              
+                
+              </div>
+
+              <div style="height: 220;flex-direction: row;">
+              <!-- 调入调出门店 -->
+                   <div style="flex: 0.4;margin-top: 15;">
+                     <div>
+                       <text style="margin-left: 15;font-size: 35;color: gray;">调出门店</text>
+                     </div>
+                     <div style="margin-top: 30;height: 100;">
+                       <text style="margin-left: 15;font-size: 35;">{{transferredOutStoreName}}</text>
+                     </div>
+                   </div>
+
+                   <div style="flex: 0.2;justify-content: center;flex-direction: row;">
+                      <div style="margin-top: 80;"> 
+                         <image src="{{nextIcon}}" style="height: 40;width: 40;"></image>
+                      </div>
+
+                     
+                    
+                   </div>
+
+                   <div style="flex: 0.4;">
+                     <div style="margin-top: 15;">
+                       <text style="text-align: right;margin-right: 15;font-size: 35;color: gray;">调入门店</text>
+                     </div>
+                     <div style="margin-top: 30;">
+                       <text style="text-align: right;margin-right: 15;height: 100;font-size: 35;">{{transferredInStoreName}}</text>
+                     </div>
+                   </div>
+                
+              </div>
+              <div style="height: 1;background-color: rgb(237,237,237);"></div>
+
+               <div repeat="{{productTransferredInAndOutNumList}}">
+                   <!--   产品和产品数量 -->
+                 <div style="flex-direction: row;justify-content: center;align-content: center;height: 120;">
+                   <div style="flex: 0.8;margin-left: 15;justify-content: center;">
+                      <text style="font-size: 35;;color: gray;">{{fixedProduct.productName}}({{fixedProduct.productCode}})</text>
+                   </div>
+                   <div style="flex: 0.2;margin-left: 15;justify-content: center;">
+                       <text style="font-size: 35;text-align: right;margin-right: 15;color: gray;">{{transferredInAndOutNum}}</text>
+                   </div>
+                 </div>
+                 <bottom-line></bottom-line>
+                
+
+              </div>
+
+              
+                 
+           </cell>
+
+       </list>
+     
+   </div>
+
+
+
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+   
+
+   
+
+    module.exports = {
+        data: {
+            
+            nextIcon:'https://oan5zurgx.qnssl.com/pd_port@2x.png',
+            groups:[],
+            products:[],
+        },
+        ready: function () {
+          var self = this;
+          self.requestData(); 
+        },
+        created: function() {
+
+          var self = this;
+          //获取native端的staffid以及日期
+          var eventModule = require('@weex-module/event')
+          eventModule.obtainSelectData(function(e){
+            
+               var startDate = e.startDate;
+               var endDate = e.endDate;
+               var storeId = e.storeId;
+               self.requestData(storeId,startDate,endDate);
+
+
+          })
+       },
+
+        methods: {
+             /*
+             请求数据
+           */
+           requestData:function(storeId,startDate,endDate){
+               var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://test.wgmf.com/mkt-back/productManagement/findTransferredInAndOutDetail?storeNo='+storeId+'&startDate='+startDate+'&endDate='+endDate
+                 var eventModule = require('@weex-module/event');
+                eventModule.showHDProgrecessOnWeexPage();
+              
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {
+                    var eventModule = require('@weex-module/event');
+                    eventModule.hiddenHDProgrecessOnWeexPage();   
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+
+                    modal.alert({
+                      message: '获取数据失败',
+                      okTitle: '好'
+                    })
+                  } else {
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+
+                   self.groups = ret.data.resultList; 
+                    
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+           
+          },
+
+
+             toast: function(msg, duration) {
+                duration = duration || 2;
+                var modal = require('@weex-module/modal');
+                modal.toast({
+                  'message': msg,
+                  'duration': duration
+                });
+
+              },
+
+        }
+    }
+</script>

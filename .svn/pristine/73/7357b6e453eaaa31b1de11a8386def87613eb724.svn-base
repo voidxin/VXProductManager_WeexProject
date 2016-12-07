@@ -1,0 +1,274 @@
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	var __weex_template__ = __webpack_require__(12)
+	var __weex_style__ = __webpack_require__(13)
+	var __weex_script__ = __webpack_require__(14)
+
+	__weex_define__('@weex-component/088717f42919c9324a5be15fda999222', [], function(__weex_require__, __weex_exports__, __weex_module__) {
+
+	    __weex_script__(__weex_module__, __weex_exports__, __weex_require__)
+	    if (__weex_exports__.__esModule && __weex_exports__.default) {
+	      __weex_module__.exports = __weex_exports__.default
+	    }
+
+	    __weex_module__.exports.template = __weex_template__
+
+	    __weex_module__.exports.style = __weex_style__
+
+	})
+
+	__weex_bootstrap__('@weex-component/088717f42919c9324a5be15fda999222',undefined,undefined)
+
+/***/ },
+
+/***/ 12:
+/***/ function(module, exports) {
+
+	module.exports = {
+	  "type": "div",
+	  "classList": [
+	    "div0"
+	  ],
+	  "children": [
+	    {
+	      "type": "div",
+	      "classList": [
+	        "div1"
+	      ],
+	      "children": [
+	        {
+	          "type": "image",
+	          "classList": [
+	            "logoImage"
+	          ],
+	          "attr": {
+	            "src": function () {return this.image_url}
+	          },
+	          "style": {
+	            "width": function () {return this.width_screen},
+	            "height": function () {return this.width_screen}
+	          }
+	        },
+	        {
+	          "type": "text",
+	          "classList": [
+	            "title1"
+	          ],
+	          "attr": {
+	            "value": function () {return this.version}
+	          }
+	        }
+	      ]
+	    },
+	    {
+	      "type": "div",
+	      "classList": [
+	        "btn"
+	      ],
+	      "events": {
+	        "click": "updateHandler"
+	      },
+	      "children": [
+	        {
+	          "type": "text",
+	          "classList": [
+	            "title2"
+	          ],
+	          "style": {
+	            "color": function () {return this.textcolor}
+	          },
+	          "attr": {
+	            "value": function () {return this.update_str}
+	          }
+	        }
+	      ]
+	    }
+	  ]
+	}
+
+/***/ },
+
+/***/ 13:
+/***/ function(module, exports) {
+
+	module.exports = {
+	  "title1": {
+	    "color": "#000000",
+	    "fontSize": 45,
+	    "marginTop": 30
+	  },
+	  "div1": {
+	    "alignItems": "center",
+	    "marginTop": 60
+	  },
+	  "btn": {
+	    "marginTop": 90,
+	    "marginLeft": 30,
+	    "marginRight": 30,
+	    "fontSize": 36,
+	    "textAlign": "center",
+	    "borderColor": "#FFA500",
+	    "borderWidth": 1,
+	    "padding": 20,
+	    "borderRadius": 10,
+	    "height": 88
+	  },
+	  "title2": {
+	    "textAlign": "center"
+	  }
+	}
+
+/***/ },
+
+/***/ 14:
+/***/ function(module, exports) {
+
+	module.exports = function(module, exports, __weex_require__){'use strict';
+
+	var stream = __weex_require__('@weex-module/stream');
+
+	var update_URL;
+
+	var update_state;
+	module.exports = {
+	  data: function () {return {
+	    width_screen: 450,
+	    width_height: 450,
+	    image_url: 'https://oan5zurgx.qnssl.com/%E8%90%A5%E9%94%80%E7%AE%A1%E5%AE%B6.png',
+	    version: '营销管家',
+	    update_str: '更新',
+	    textcolor: 'orange'
+
+	  }},
+	  ready: function ready() {
+	    var self = this;
+
+	    self.loadVersionData("1.2.1");
+	  },
+
+	  methods: {
+	    checkUpdate: function checkUpdate() {
+
+	      var self = this;
+	      var eventModule = __weex_require__('@weex-module/event');
+	      eventModule.checkVerionWithLocalVersion(function (ret) {
+	        self.version = '营销管家V' + ret;
+	        self.loadVersionData(ret);
+	      });
+	    },
+
+	    updateHandler: function updateHandler() {
+	      var self = this;
+	      var eventModule = __weex_require__('@weex-module/event');
+	      eventModule.updateVersion(self.update_URL, self.update_state);
+	    },
+
+	    alert: function alert(msg, okTitle, cancelTitle) {
+	      var self = this;
+	      if (!msg || typeof msg !== 'string') {
+	        msg = "I am Alert!";
+	      }
+	      var modal = __weex_require__('@weex-module/modal');
+	      modal.alert({
+	        'message': msg,
+	        'okTitle': '确定',
+	        'cancelTitle': '取消'
+	      }, function (ret) {});
+	    },
+
+	    toast: function toast(msg, duration) {
+	      duration = duration || 2;
+	      var modal = __weex_require__('@weex-module/modal');
+	      modal.toast({
+	        'message': msg,
+	        'duration': duration
+	      });
+	    },
+
+	    loadVersionData: function loadVersionData(version) {
+
+	      var self = this;
+	      self.toast('正在获取数据中...');
+	      var GET_URL = 'http://app.wgmf.combase-data-service/information/getAppVersionInfo?versionNo=' + version + '&type=yxgj_iOS';
+	      stream.fetch({
+	        method: 'GET',
+	        url: GET_URL,
+	        type: 'json'
+	      }, function (ret) {
+
+	        if (!ret.ok) {
+	          self.alert('服务器错误');
+	        } else {
+	          var dataArr = ret.data;
+	          if (dataArr.length > 0) {
+	            var firstObj = dataArr[0];
+
+	            self.update_state = firstObj.isUpgrade;
+	            if (firstObj.isUpgrade == 1) {
+	              self.alert(firstObj.information);
+	              self.update_URL = firstObj.upgradeUrl;
+	              self.update_str = '点击更新';
+	            } else {
+	              self.update_str = '已是最新版本';
+	            }
+	          } else {
+	            self.textcolor = 'gray';
+	            self.update_str = '已是最新版本';
+	          }
+	        }
+	      }, function (response) {});
+	    }
+
+	  }
+	};}
+	/* generated by weex-loader */
+
+
+/***/ }
+
+/******/ });

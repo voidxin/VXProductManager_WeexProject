@@ -1,0 +1,115 @@
+<!-- 调入调出查询列表 -->
+<template>
+   
+   
+   <div>
+       <div >
+           <div style="flex-direction: row;justify-content: center;align-content: center;background-color: orange;height: 120;">
+              <div style="flex:0.4;justify-content: center;align-content: center;margin-right: 15" >
+                 <text style="font-size: 35;color: white;text-align:right;">全部门店</text>
+              </div>
+              <div style="justify-content: center;align-content: center;">
+                 <div style="background-color: gray;height: 30;width: 1 ;"></div>
+              </div>
+              <div style="flex: 0.6 ;justify-content: center;align-content: center;margin-left: 15">
+                 <text style="font-size: 35;color: white;align-content: flex-start;">2010.10.1-2016.10.31 V</text>
+              </div>
+
+           </div>
+      
+
+       </div>
+
+
+       <scroller>
+
+           <div repeat="{{storedatas}}">
+                 <div style="flex-direction: row; height: 150">
+                    <div style="flex:0.6;justify-content: center;align-content: center;">
+                         <text style="font-size: 30;margin-left: 15">{{store}}</text>
+                    </div>
+                    <div style="flex:0.3;justify-content: center;align-content: flex-end;margin-right: {{checkflag==1?0:15}};" onclick="{{redirect}}">
+                         <text style="font-size: 30;color:green;text-align: right;">{{showflag==1?'查看明细':'无调入调出'}}</text>
+                    </div>
+
+                    <div repeat="{{showflag==1?details3:details2}}" style="flex:0.1;justify-content: center;align-content: flex-end; ">
+                         <text style="margin-right: 15;text-align: right;"> > </text>
+
+                    </div>
+                 </div>
+                  <bottom-line> </bottom-line>
+                  <div repeat="{{showflag==1?details1:details2}}">
+                      <div  style="height: 200;justify-content: center;align-content: center;">
+                           <div style="flex-direction: row;margin-left: 15">
+                             <text style="color: gray;font-size: 30;flex:1">调入数量</text>
+                             <text style="color: gray;font-size: 30;flex:1">调出数量</text> 
+                           </div>
+                           <div style="flex-direction: row; margin-top: 20;margin-left: 15">
+                             <text style="color: gray;font-size: 30;flex:1">调入金额</text>
+                             <text style="color: gray;font-size: 30;flex:1">调出金额</text> 
+                       </div>
+                  </div>
+                  </div>
+                  
+                
+                 <bottom-line> </bottom-line>
+             </div>
+
+       </scroller>
+     
+   </div>
+
+
+
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+   
+
+   
+
+    module.exports = {
+        data: {
+
+            url:'',
+            
+            storedatas:[{store:"家乐福南山店",showflag:1},
+                        {store:"家乐福南山店",showflag:0},
+                        {store:"家乐福南山店",showflag:0},
+                        {store:"家乐福南山店",showflag:0},
+                        {store:"家乐福南山店",showflag:0},
+
+
+            ],
+            details1:[{},{},{}],
+            details2:[],
+            details3:[{}],
+
+        },
+        ready: function () {
+           
+        },
+
+        methods: {
+            redirect:function(){
+                 // 跳转到查询详情页面
+                 this.$openURL('productPortQueryDetail.js'); 
+                
+            }
+        },
+        created: function() {
+        
+       }
+    }
+
+
+    
+        
+      
+    
+</script>

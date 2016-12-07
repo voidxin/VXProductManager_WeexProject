@@ -1,0 +1,131 @@
+<!-- 资材库明细 -->
+
+<template>
+   <div>
+       <div style="justify-content: center;align-content: center;height: 120;background-color: rgb(224,224,224);">
+       	  <text style="font-size: 35;color: black;text-align: left;margin-left: 15;">{{storeName}}</text>
+       </div>
+       <scroller>
+           <div style="flex-direction: row;justify-content: center;align-content: center;height: 110;">
+           	  <div style="flex:0.8;justify-content: center;">
+           	  	<text style="font-size: 30;color: gray;margin-left: 15;">资材名称</text>
+           	  </div>
+           	  <div style="flex:0.2;justify-content: center;">
+           	  	<text style="font-size: 30;color: gray;margin-right: 15;text-align: right;">数量</text>
+           	  </div>
+
+           </div>
+           <bottom-line></bottom-line>
+           <div repeat="{{groups}}">
+	            	<div  style="flex-direction: row;justify-content: center;align-items: center;height: 150;">
+	                <div style="flex: 0.8;height: 150;justify-content: center;">
+	                	<div style="margin-left: 15;">
+	            		   <text style="font-size: 35;">{{productName}}</text>
+	            	    </div>
+	            	    <div style="margin-top: 15;margin-left: 15;">
+	            		   <text style="font-size: 30;color: gray;">{{productCode}}</text>
+	            	    </div>
+	                </div>
+	                <div style="flex: 0.2;height: 150;justify-content: center;">
+	                	<div style="margin-right: 0;">
+	                		<text style="font-size: 35;text-align: right; margin-right: 15;">{{proNums[$index]}}</text>
+	                	</div>
+	                </div>
+
+	               </div>
+	               <bottom-line></bottom-line>
+	         </div>
+
+       </scroller>s
+   </div>
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+  
+    module.exports = {
+        data: {
+            storeName:'',
+            groups:[],
+            proNums:[],
+
+        },
+        ready: function () {
+             var self = this;
+             //从native获取staffId
+             var eventModule = require('@weex-module/event')
+             eventModule.deliverStoreIdFromNative(function(ret){
+             	     self.storeName = ret.storeName;
+                 	 self.requestData(ret.storeId);
+              })
+            
+
+        },
+
+        methods: {
+            requestData:function(sd){
+                var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://test.wgmf.com/mkt-back/productManagement/findCapitalStockDetail?storeNo='+sd
+                self.toast('数据加载中...')
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {   
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+
+                    modal.alert({
+                      message: '获取数据失败',
+                      okTitle: '好'
+                    })
+                  } else {
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+                   
+                   
+                    var index = 0;
+                    for(index = 0;ret.data.resultList.length;index++){
+                        var model = ret.data.resultList[index]
+                        var fixedProduct = model.fixedProduct
+                        self.groups.push(fixedProduct)
+                        self.proNums.push(model.productNum)
+                        
+                    }
+                  
+                    
+                    
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+
+            },
+
+            toast: function(msg, duration) {
+                duration = duration || 2;
+                var modal = require('@weex-module/modal');
+                modal.toast({
+                  'message': msg,
+                  'duration': duration
+                });
+
+            },
+            
+        
+        },
+        created: function() {
+           
+
+       }
+    }   
+</script>

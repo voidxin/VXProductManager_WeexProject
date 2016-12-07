@@ -1,0 +1,150 @@
+<!-- 资材库查询列表 -->
+<template>
+   
+   
+   <div>
+
+       <div style="justify-content: center;align-content: center;background-color: orange;height: 120;">
+       	<text style="text-align: center;">{{staffName}}-{{position}}|全部门店</text>
+       </div>
+   <!-- 
+       <scroller>
+            <div repeat="{{groups}}" >
+                <div style="height: 150;flex-direction: row;align-items: center;" onclick="cellClick($index)">
+	                <div style="flex:0.9;">
+	                	 <text style="font-size: 35;margin-left: 15;">{{shop.shopName}}</text>
+	                </div>
+
+	                <div style="flex:0.1;justify-content: center;">
+	                	<text style="font-size: 35;text-align: center;"> > </text>
+	                </div>
+
+                   
+     
+                </div>
+                <bottom-line></bottom-line>
+             </div>
+
+       </scroller> -->
+
+       <list>
+            <cell repeat="{{groups}}">
+                <div style="height: 150;flex-direction: row;align-items: center;" onclick="cellClick($index)">
+	                <div style="flex:0.9;">
+	                	 <text style="font-size: 35;margin-left: 15;">{{shop.shopName}}</text>
+	                </div>
+
+	                <div style="flex:0.1;justify-content: center;">
+	                	<text style="font-size: 35;text-align: center;"> > </text>
+	                </div>
+
+                   
+     
+                </div>
+                <bottom-line></bottom-line>
+             </cell>
+
+       </list>
+     
+   </div>
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+  
+    module.exports = {
+    	data: {
+           groups:[],
+           staffName:'',
+           position:'',
+
+        },
+           
+        ready: function () {
+             var self = this;
+             //获取网络数据
+             self.requestData()
+             //获取登录人信息
+             var eventModule = require('@weex-module/event'); 
+             eventModule.userInformation(function(e){
+                  self.staffName = e.staffName;
+                  self.position = e.position;     
+             });
+           
+  
+        },
+
+        methods: {
+            requestData:function(sd){
+                var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://test.wgmf.com/mkt-back/productManagement/findCapitalStockSearch?staffId=09825'
+                var eventModule = require('@weex-module/event');
+                eventModule.showHDProgrecessOnWeexPage();
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {  
+                      var eventModule = require('@weex-module/event');
+                    eventModule.hiddenHDProgrecessOnWeexPage();  
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+                    modal.alert({
+                      message: '获取数据失败',
+                      okTitle: '好'
+                    })
+                  } else {
+                    
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+                    self.groups = ret.data.resultList;
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+
+            },
+
+            toast: function(msg, duration) {
+                duration = duration || 6;
+                var modal = require('@weex-module/modal');
+                modal.toast({
+                  'message': msg,
+                  'duration': duration
+                });
+
+            },
+            cellClick:function(index){
+
+                 var self = this
+                 self.toast(index + '被点击0')
+                 var model = self.groups[index]
+                 var shopId = model.shop.shopId
+                 var shopName = model.shop.shopName
+                 var eventModule = require('@weex-module/event')
+                 eventModule.saveStoreIdWhenCellClicked(shopId,shopName,function(ret){
+                 	//保存成功，跳转页面
+                 	self.$openURL('ZicaikuDetail.js?title=资材库存查询');
+                 })
+                 
+               
+               
+
+            },
+        
+        },
+        created: function() {
+           
+
+       }
+    }   
+</script>

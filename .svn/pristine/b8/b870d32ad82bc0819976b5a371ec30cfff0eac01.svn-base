@@ -1,0 +1,104 @@
+<!-- 调入调出明细查询 -->
+<template>
+   <div>
+       <scroller>
+
+           <div repeat="{{groups}}">
+             <!--  时间和调拨人 -->
+
+              <div style="background-color: rgb(237,237,237);height: 130;flex-direction: row;">
+
+                <div style="justify-content: center;align-content: center; flex: 1">
+                  <text style="color: gray;font-size: 35;text-align: left;margin-left: 15">2016.10.15</text>
+                </div>
+
+                <div style="justify-content: center;align-content: center;flex: 1">
+                    <text style="color: gray;font-size: 35;text-align: right;margin-right: 15">调拨人:张新</text>
+                </div>
+              
+                
+              </div>
+
+              <div style="height: 220;flex-direction: row;">
+              <!-- 调入调出门店 -->
+                   <div style="flex: 0.4;margin-top: 15;">
+                     <div>
+                       <text style="margin-left: 15;font-size: 35;color: gray;">调出门店</text>
+                     </div>
+                     <div style="margin-top: 30;height: 100;">
+                       <text style="margin-left: 15;font-size: 35;">华润万家深圳南头店</text>
+                     </div>
+                   </div>
+
+                   <div style="flex: 0.2;justify-content: center;flex-direction: row;">
+                      <div style="margin-top: 80;"> 
+                         <image src="{{nextIcon}}" style="height: 40;width: 40;"></image>
+                      </div>
+
+                     
+                    
+                   </div>
+
+                   <div style="flex: 0.4;">
+                     <div style="margin-top: 15;">
+                       <text style="text-align: right;margin-right: 15;font-size: 35;color: gray;">调入门店</text>
+                     </div>
+                     <div style="margin-top: 30;">
+                       <text style="text-align: right;margin-right: 15;height: 100;font-size: 35;">沃尔玛南新店</text>
+                     </div>
+                   </div>
+                
+              </div>
+
+              <div style="height: 1;background-color: rgb(237,237,237);"></div>
+
+
+              <div repeat="{{products}}">
+             <!--   产品和产品数量 -->
+                 <div style="flex-direction: row;margin-top:{{$index==0?30:10}};">
+                   <text style="font-size: 35;flex: 0.8;margin-left: 15;color: gray;height: 80;">经典固元膏(2.400010)</text>
+                   <text style="font-size: 35;flex: 0.2;text-align: right;margin-right: 15;color: gray">23</text>
+                 </div>
+                
+
+              </div>
+
+              
+                 
+           </div>
+
+       </scroller>
+     
+   </div>
+
+
+
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+   
+
+   
+
+    module.exports = {
+        data: {
+            
+            nextIcon:'https://oan5zurgx.qnssl.com/pd_port@2x.png',
+            groups:[{},{},{}],
+            products:[{},{},{},{},{}],
+
+        },
+        ready: function () {
+           
+        },
+
+        methods: {
+            
+        }
+    }
+</script>

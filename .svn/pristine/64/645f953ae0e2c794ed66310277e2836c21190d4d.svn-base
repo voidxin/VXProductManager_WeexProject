@@ -1,0 +1,150 @@
+<!-- 资材收货门店列表 -->
+
+<template>
+   
+   
+   <div>
+   
+       <scroller>
+            <div repeat="{{groups}}" >
+                <div style="height: 280;flex-direction: row;" onclick="cellClick($index)">
+                    <div style="flex: 0.8; justify-content: center;align-content: center;">
+                    	<div  style="margin-top: 20; margin-left: 15;" >
+                		   <text style="font-size: 35;">{{storeNames[$index]}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;margin-left: 15;">
+                		   <text style="font-size: 30;color: gray;">配送单号:{{dispatchNo}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;margin-left: 15;">
+                		   <text style="font-size: 30;color: gray;">配送数量:{{dispatchNum}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;margin-left: 15;">
+                		   <text style="font-size: 30;color: gray;">配送日期:{{dispatchDate}}</text>
+                	    </div>
+                    </div>
+
+                    <div style="flex: 0.2;flex-direction: row;">
+                    	<div style="flex: 0.5;justify-content: center;align-content: center;">
+                    		<text style="font-size: 30;text-align: center;color: orange;">收货</text>
+                    	</div>
+                    	<div style="flex: 0.5;justify-content: center;align-content: center;">
+                    		<text style="font-size: 30; text-align: center;"> > </text>
+                    	</div>
+                    </div>
+
+
+                	
+                </div>
+                <bottom-line></bottom-line>
+             </div>
+
+       </scroller>
+     
+   </div>
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+  
+    module.exports = {
+        data: {
+            storeNames:[],
+            version:'1.3.1',
+            groups:[{},{},{},{},{},{}],
+
+        },
+        ready: function () {
+             var self = this;
+             var eventModule = require('@weex-module/event');
+             eventModule.rectiveStaffId(function(ret){
+
+                 //从native获取staffId
+                 var staffId = ret;
+                 self.requestData(staffId);
+
+
+
+             });
+            
+           
+  
+        },
+
+        methods: {
+            requestData:function(sd){
+                var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://app.test.com/mkt-back/productManagement/findCapitalReceipts?staffId='+sd
+                self.toast('数据加载中...')
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {   
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+                    modal.alert({
+                      message: '获取数据失败',
+                      okTitle: '好'
+                    })
+                  } else {
+                    
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+                    var dataArr = ret.data.resultList
+                    self.groups = dataArr
+                    var index = 0
+                    for(index = 0;dataArr.length;index++){
+                        var model = dataArr[index]
+                        var shopName = model.shop.shopName
+                        self.storeNames.push(shopName)
+                        
+                    }
+                  
+                    self.storeName = ret.data.msgContent
+                    
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+
+            },
+
+            toast: function(msg, duration) {
+                duration = duration || 2;
+                var modal = require('@weex-module/modal');
+                modal.toast({
+                  'message': msg,
+                  'duration': duration
+                });
+
+            },
+            cellClick:function(index){
+
+                 var self = this
+                 var model = self.groups[index]
+                 var capitalReceiptsId = model.capitalReceiptsId
+                 var eventModule = require('@weex-module/event'); 
+                 eventModule.zicaiReceiveCall(capitalReceiptsId,function(e){
+                        self.$openURL('ZicaiReceiveDetail.js?title=资材收货');
+                 });
+               
+               
+
+            },
+        
+        },
+        created: function() {
+           
+
+       }
+    }   
+</script>

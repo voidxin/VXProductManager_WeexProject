@@ -1,0 +1,271 @@
+<!-- 调入调出查询列表 -->
+<template>
+   
+   
+   <div>
+       <div onclick="conditionSelect">
+           <div style="flex-direction: row;justify-content: center;align-content: center;background-color: rgb(255,154,0);height: 120;">
+              <div style="flex:0.3;justify-content: center;align-content: center;margin-right: 15" >
+                 <text style="font-size: 30;color: white;text-align:right;">{{storeName}}</text>
+              </div>
+              <div style="justify-content: center;align-content: center;">
+                 <div style="background-color: gray;height: 30;width: 1 ;"></div>
+              </div>
+              <div style="flex: 0.7 ;justify-content: center;align-content: center;margin-left: 15">
+                 <text style="font-size: 30;color: white;align-content: flex-start;">{{startDate}}至{{endDate}}</text>
+              </div>
+
+           </div>
+      
+
+       </div>
+
+       
+
+
+
+       <list>
+           <cell repeat="{{storedatas}}">
+                 <div style="flex-direction: row; height: 150">
+                    <div style="flex:0.6;justify-content: center;align-content: center;">
+                         <text style="font-size: 30;margin-left: 15">{{shop.shopName}}</text>
+                    </div>
+                    <div if="{{transferredInOutFlag==0}}" style="flex:0.3;justify-content: center;align-content: flex-end;margin-right: {{transferredInOutFlag==1?0:15}};" onclick="{{redirect($index)}}">
+                         <text style="font-size: 30;text-align: right;color:green;">查看明细</text>
+                    </div>
+                    <div if="{{transferredInOutFlag==1}}" style="flex:0.3;justify-content: center;align-content: flex-end;margin-right: {{transferredInOutFlag==1?0:15}};">
+                         <text style="font-size: 30;text-align: right;color:gray">无调入调出</text>
+                    </div>
+
+                    <div if="{{transferredInOutFlag==0}}" style="flex:0.1;justify-content: center;align-content: flex-end; ">
+                         <text style="margin-right: 15;text-align: right;"> > </text>
+
+                    </div>
+                 </div>
+                  <bottom-line> </bottom-line>
+                  <div if="{{transferredInOutFlag==0}}">
+                      <div  style="height: 200;justify-content: center;align-content: center;">
+                           <div style="flex-direction: row;margin-left: 15">
+                             <text style="color: gray;font-size: 30;flex:1">调入数量:{{transferredInNum}}</text>
+                             <text style="color: gray;font-size: 30;flex:1">调出数量:{{transferredOutNum}}</text> 
+                           </div>
+                           <div style="flex-direction: row; margin-top: 20;margin-left: 15">
+                             <text style="color: gray;font-size: 30;flex:1">调入金额:{{transferredInAmount}}</text>
+                             <text style="color: gray;font-size: 30;flex:1">调出金额:{{transferredOutNum}}</text> 
+                       </div>
+                  </div>
+                  </div>
+                  
+                
+                 <bottom-line> </bottom-line>
+             </cell>
+
+       </list>
+     
+   </div>
+
+
+
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+    module.exports = {
+        data: {
+
+            url:'',
+            startDate:'',
+            endDate:'',
+            storeName:'全部门店',
+            storeId:'',
+            staffId:'',
+            
+            storedatas:[],
+            details1:[{},{},{}],
+            details2:[],
+            details3:[{}],
+
+        },
+        ready: function () {
+          
+            
+
+        },
+
+        methods: {
+            redirect:function(index){
+              var self = this;
+              var storeId = self.storedatas[index].shop.shopId;
+              //点击的时候获取到点击的门店id，选择的时间，然后通过native传到下一页.回调成功时跳转页面
+              var eventModule = require('@weex-module/event')
+              eventModule.saveStoreId(storeId,self.startDate,self.endDate,function(e){
+
+                   // 跳转到查询详情页面
+                 self.$openURL('productPortQueryDetail.js?title=调入调出查询明细'); 
+
+              })  
+                
+            },
+            conditionSelect:function(){
+              /*
+                选择筛选条件
+                调用原生的时间控件
+              */
+               var self = this;
+               var eventModule = require('@weex-module/event');
+               eventModule.showDatePickView();
+
+            },
+            globallisten:function(){
+              var self = this;
+              var globalEvent = require('@weex-module/globalEvent');
+                globalEvent.addEventListener("geolocation",function(e){
+                      
+                      self.endDate = e.endDate;
+                      self.startDate = e.startDate;
+                      self.storeName = e.storeName;
+                      self.storeId = e.storeId;
+
+                      self.storedatas = [];
+                      //重新获取数据
+
+                      self.requestData(self.staffId);
+
+              });
+            },
+             /*
+              获取本月的最后一天
+            */
+            getThisMonthLastDate:function() {
+               var localDate = new Date();
+               var year = localDate.getFullYear();
+               var month = localDate.getMonth();
+               var firstdate = year + '-' + month + '-01';  
+               var day = new Date(year,month,0);   
+               var lastdate = year + '-' + month + '-' + day.getDate();   
+               return lastdate;  
+           }, 
+           /*
+            获取本月的第一天
+           */
+           getThisMonthFirstDate:function() {
+
+               var localDate = new Date();
+               var year = localDate.getFullYear();
+               var month = localDate.getMonth();
+               var firstdate = year + '-' + month + '-01';  
+                 
+               return firstdate;  
+
+           },
+           /*
+             请求数据
+           */
+           requestData:function(staffId){
+               var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://test.wgmf.com/mkt-back/productManagement/findTransferredInAndOut?staffId='+staffId+'&startDate='+self.startDate+'&endDate='+self.endDate
+                 var eventModule = require('@weex-module/event');
+                eventModule.showHDProgrecessOnWeexPage();
+               
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {
+                     
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+
+                    modal.alert({
+                      message: '获取数据失败',
+                      okTitle: '好'
+                    })
+                  } else {
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+                    var dataArr = new Array();
+                    var norArr = new Array();
+                    for (var i = 0; i < ret.data.resultList.length; i++) {
+                      var flag = ret.data.resultList[i].transferredInOutFlag;
+                      if (flag == 1) {
+                        dataArr.push(ret.data.resultList[i]);
+                      }else{
+                        norArr.push(ret.data.resultList[i])
+                      }
+
+                    }
+
+                    for (var i = 0; i < norArr.length; i++) {
+                      self.storedatas.push(norArr[i])
+                    }
+
+                    for (var i = 0; i < dataArr.length; i++) {
+                      self.storedatas.push(dataArr[i])
+                    }
+
+                     var eventModule = require('@weex-module/event');
+                    eventModule.hiddenHDProgrecessOnWeexPage(); 
+                   
+                   
+                   
+                    
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+           
+          },
+
+
+         toast: function(msg, duration) {
+            duration = duration || 2;
+            var modal = require('@weex-module/modal');
+            modal.toast({
+              'message': msg,
+              'duration': duration
+            });
+
+          },
+
+
+        },
+        created: function() {
+
+          var self = this;
+          self.globallisten();
+
+          //默认数据
+          self.startDate = self.getThisMonthFirstDate();
+          self.endDate = self.getThisMonthLastDate();
+          //获取native端的staffid
+          var eventModule = require('@weex-module/event')
+          eventModule.rectiveStaffId(function(e){
+             self.staffId = e;
+             //请求数据
+             self.requestData(e);
+          })
+
+
+         
+           
+        
+       }
+    }
+
+
+
+    
+    
+        
+      
+    
+</script>

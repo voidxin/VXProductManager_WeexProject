@@ -1,0 +1,132 @@
+<!-- 资材收货门店列表 -->
+<!-- 调入调出查询列表 -->
+<template>
+   
+   
+   <div>
+   
+       <scroller>
+            <div repeat="{{groups}}">
+                <div style="height: 280;flex-direction: row;" onclick="cellClick">
+                    <div style="flex: 0.8; justify-content: center;align-content: center;">
+                    	<div  style="margin-top: 20;" >
+                		   <text style="font-size: 35;">{{storeNames[$index]}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;">
+                		   <text style="font-size: 30;color: gray;">配送单号:{{dispatchNo}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;">
+                		   <text style="font-size: 30;color: gray;">配送数量:{{dispatchNum}}</text>
+                	    </div>
+                	    <div style="margin-top: 15;">
+                		   <text style="font-size: 30;color: gray;">配送日期:{{dispatchDate}}</text>
+                	    </div>
+                    </div>
+
+                    <div style="flex: 0.2;flex-direction: row;">
+                    	<div style="flex: 0.5;justify-content: center;align-content: center;">
+                    		<text style="font-size: 30;text-align: center;color: orange;">收货</text>
+                    	</div>
+                    	<div style="flex: 0.5;justify-content: center;align-content: center;">
+                    		<text style="font-size: 30; text-align: center;"> > </text>
+                    	</div>
+                    </div>
+
+
+                	
+                </div>
+                <bottom-line></bottom-line>
+             </div>
+
+       </scroller>
+     
+   </div>
+</template>
+
+<style>
+   
+
+</style>
+
+<script>
+  
+    module.exports = {
+        data: {
+            storeNames:[],
+            version:'1.3.1',
+            groups:[{},{},{},{},{},{}],
+
+        },
+        ready: function () {
+             var self = this;
+            self.requestData();
+           
+  
+        },
+
+        methods: {
+            requestData:function(){
+                var self = this
+                var stream = require('@weex-module/stream')
+                var modal = require('@weex-module/modal')
+                var GET_URL = 'http://192.168.5.56:8383/mkt-back/productManagement/findCapitalReceipts?staffId=09825'
+                self.toast('数据加载中...')
+                stream.fetch({
+                  method: 'GET',
+                  url: GET_URL,
+                  type: 'json'
+                }, function(ret) {   
+                    if (typeof ret == 'string') {
+                    ret = JSON.parse(ret)
+                  }
+                  if (!ret.ok) {
+                    modal.alert({
+                      message: '网络通信失败，请确认网络状况',
+                      okTitle: '好'
+                    })
+                  } else {
+                    
+                    if (typeof ret.data == 'string') {
+                      ret.data = JSON.parse(ret.data)
+                    }
+                    var dataArr = ret.data.resultList
+                    self.groups = dataArr
+                    var index = 0
+                    for(index = 0;dataArr.length;index++){
+                        var model = dataArr[index]
+                        var shopName = model.shop.shopName
+                        self.storeNames.push(shopName)
+                    }
+                  
+                    self.storeName = ret.data.msgContent
+                    
+                  }
+                },function(response){
+                  // self.toastTips('get:' + GET_URL);
+                });
+
+            },
+
+            toast: function(msg, duration) {
+                duration = duration || 2;
+                var modal = require('@weex-module/modal');
+                modal.toast({
+                  'message': msg,
+                  'duration': duration
+                });
+
+            },
+            cellClick:function(e){
+
+                var self = this
+                self.toast(e);
+
+            },
+        
+        },
+        created: function() {
+           
+
+       }
+    }   
+</script>
