@@ -1,4 +1,4 @@
-# WeexWithMe
+
 
 ## How to start
 
@@ -10,9 +10,9 @@ npm install
 
 ### Development
 
-* `npm run build`: build `src/main.we` into `dist/main.js`
-* `npm run dev`: watch file changes of `src/main.we` and automatically build into `dist/main.js`
-* `npm run serve`: preview in html5 renderer through `http://localhost:8080/`
+* `npm run build`
+* `npm run dev`
+* `npm run serve`: preview in html5 renderer through `http://localhost:12590/`
 
 *note: the entry file can be configured in `webpack.config.js`, learn more from [weex-loader](https://www.npmjs.com/package/weex-loader)*
 
